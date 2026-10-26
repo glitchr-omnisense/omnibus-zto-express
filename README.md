@@ -1,6 +1,6 @@
 # omnibus/zto-express
 
-ZTO Express (中通快递) for [omniscient/omnibus](https://github.com/glitchr-studio/omnibus): orders
+ZTO Express (中通快递) for [omnisense/omnibus](https://github.com/glitchr-omnisense/omnibus): orders
 with electronic waybills, tracking and cancellation - the open platform's signed JSON APIs.
 Prices come from configuration (`rates`): ZTO quotes by contract.
 
@@ -8,7 +8,7 @@ Prices come from configuration (`rates`): ZTO quotes by contract.
 $gateway = (new ZtoExpressGatewayFactory($http))->create($options);   // $http: the application's HTTP client - none given, the factory makes its own; the options below
 ```
 
-No framework needed: the package requires `omniscient/omnibus` and `symfony/http-client`. In a
+No framework needed: the package requires `omnisense/omnibus` and `symfony/http-client`. In a
 Symfony application, the same through the bundle's configuration:
 
 ```yaml

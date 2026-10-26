@@ -1,6 +1,6 @@
 # omnibus/zto-express
 
-ZTO Express (中通快递) for [omniscient/omnibus](https://github.com/glitchr-studio/omnibus): orders
+ZTO Express (中通快递) for [omnisense/omnibus](https://github.com/glitchr-omnisense/omnibus): orders
 with electronic waybills, tracking and cancellation, through ZTO's open platform (signed JSON
 APIs). ZTO quotes by contract: prices come from the `rates` option. The gateway posts to one path
 per message type, on `https://japi.zto.com` (live) or `https://japi-test.zto.com` (the test
@@ -18,7 +18,7 @@ environment, `sandbox: true`):
 composer require omnibus/zto-express
 ```
 
-Requires PHP 8.2, `omniscient/omnibus` (2.x) and `symfony/http-client` (6.4, 7 or 8); given no
+Requires PHP 8.2, `omnisense/omnibus` (2.x) and `symfony/http-client` (6.4, 7 or 8); given no
 HTTP client, the factory makes one with `HttpClient::create()`. In a Symfony application with
 `Omnibus\Bridge\Symfony\OmnibusBundle`, the factory is registered as soon as the package is
 installed.
@@ -40,7 +40,7 @@ Every call sends the JSON body with the headers `x-companyId` and `x-dataDigest`
 | `key` | string | - | yes | its key, which signs every call |
 | `partner_code` | ?string | `null` | no | the partner code sent as `partner` with each order; not sent when unset |
 | `sandbox` | bool | `false` | no | `true`: the test environment |
-| `rates` | list | - | no | the only way this gateway rates ([the rates option](https://github.com/glitchr-studio/omnibus/blob/2.x/docs/configuration.md#the-rates-option)) |
+| `rates` | list | - | no | the only way this gateway rates ([the rates option](https://github.com/glitchr-omnisense/omnibus/blob/2.x/docs/configuration.md#the-rates-option)) |
 
 Shipment options read when booking (`Shipment::$options`):
 
