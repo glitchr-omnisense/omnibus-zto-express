@@ -3,6 +3,7 @@
 namespace Omnibus\ZtoExpress;
 
 use Omnibus\Exception\CarrierException;
+use Omnibus\Http\Redaction;
 use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -39,13 +40,15 @@ final class Api
             $status = $response->getStatusCode();
             $envelope = json_decode($response->getContent(false), true);
         } catch (HttpExceptionInterface|\JsonException $e) {
-            throw new CarrierException('zto_express', 'ZTO request failed: '.$e->getMessage(), null, $e);
+            $secrets = $this->secrets();
+
+            throw Redaction::withoutArguments(new CarrierException('zto_express', 'ZTO request failed: '.Redaction::text($e->getMessage(), $secrets), null, Redaction::copy($e, $secrets)));
         }
         if ($status >= 400 || !\is_array($envelope)) {
-            throw new CarrierException('zto_express', sprintf('ZTO answered HTTP %d.', $status));
+            throw Redaction::withoutArguments(new CarrierException('zto_express', sprintf('ZTO answered HTTP %d.', $status)));
         }
         if (empty($envelope['status'])) {
-            throw new CarrierException('zto_express', (string) ($envelope['message'] ?? $envelope['msg'] ?? 'ZTO refused the request.'), isset($envelope['statusCode']) ? (string) $envelope['statusCode'] : (isset($envelope['code']) ? (string) $envelope['code'] : null));
+            throw Redaction::withoutArguments(new CarrierException('zto_express', (string) ($envelope['message'] ?? $envelope['msg'] ?? 'ZTO refused the request.'), isset($envelope['statusCode']) ? (string) $envelope['statusCode'] : (isset($envelope['code']) ? (string) $envelope['code'] : null)));
         }
         $result = $envelope['result'] ?? $envelope['data'] ?? [];
 
@@ -55,5 +58,15 @@ final class Api
     public static function digest(string $body, string $key): string
     {
         return base64_encode(md5($body.$key, true));
+    }
+
+    /**
+     * What a failure must not carry: the credentials, and what a request made of them.
+     *
+     * @return list<string>
+     */
+    private function secrets(string ...$more): array
+    {
+        return [$this->key, ...$more];
     }
 }

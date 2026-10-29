@@ -171,6 +171,11 @@ A missing `company_id` or `key` is an `InvalidConfigException` when the gateway 
 `Pickup`, `GetSlip`, `Paperless`, and `Rating` without `rates`, raise
 `RequestNotSupportedException` before any call.
 
+No failure carries the key: a network error's message has them masked as `***` (the key parameters
+of a URL too), its previous is a copy of the HTTP client's exception (the same class and code), and
+no trace of the chain keeps its arguments, where the request's options stood ([No secret in a
+failure](https://github.com/glitchr-omnisense/omnibus/blob/2.x/docs/errors.md#no-secret-in-a-failure)).
+
 ## Verified, and not
 
 Tested offline: `Tests/ZtoExpressGatewayTest.php` (an order created with its bill code and print
