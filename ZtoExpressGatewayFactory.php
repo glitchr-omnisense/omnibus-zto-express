@@ -26,13 +26,14 @@ final class ZtoExpressGatewayFactory extends GatewayFactory
         $config->defaults([
             'omnibus.factory_name' => 'zto_express',
             'omnibus.factory_title' => 'ZTO Express',
+            'omnibus.policy' => __DIR__.'/policy.json',
             'omnibus.required_options' => ['company_id', 'key'],
             'partner_code' => null,
             'sandbox' => false,
             'omnibus.api' => function (Config $c) {
                 $http = $this->http ?? HttpClient::create();
 
-                return new Api($http, (string) $c['company_id'], (string) $c['key'], $c['partner_code'] ?: null, (bool) $c['sandbox']);
+                return new Api($http, (string) $c['company_id'], (string) $c['key'], $c['partner_code'] ?: null, (bool) $c['sandbox'], backoff: $c->backoff());
             },
             'omnibus.action.shipping' => new ShippingAction(),
             'omnibus.action.tracking' => new TrackingAction(),
