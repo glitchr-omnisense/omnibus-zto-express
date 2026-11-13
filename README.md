@@ -4,6 +4,43 @@ ZTO Express (中通快递) for [omnisense/omnibus](https://github.com/glitchr-om
 with electronic waybills, tracking and cancellation - the open platform's signed JSON APIs.
 Prices come from configuration (`rates`): ZTO quotes by contract.
 
+## Install and a first call
+
+```sh
+composer require omnibus/zto-express
+```
+
+No account for this first call: ZTO Express's answer is recorded
+(`Omnibus\Testing\RecordedHttpClient` answers in place of the API), so nothing leaves the process.
+With your own credentials, give the factory your HTTP client (or none: it makes its own) and drop
+the recorded one.
+
+```php
+<?php
+
+require __DIR__.'/vendor/autoload.php';
+
+use Omnibus\Testing\RecordedHttpClient;
+use Omnibus\ZtoExpress\ZtoExpressGatewayFactory;
+
+// ZTO Express's answer, recorded: no account, and nothing leaves the process.
+$http = new RecordedHttpClient([
+    '/zto.open.getTraceInfo' => ['status' => true, 'result' => [[
+        ['billCode' => '75123456789012', 'scanType' => '签收', 'scanDate' => '2026-10-02 11:30:00', 'scanSite' => '北京朝阳', 'desc' => '快件已签收'],
+    ]]],
+]);
+$gateway = (new ZtoExpressGatewayFactory($http))->create(['company_id' => 'demo', 'key' => 'k', 'partner_code' => 'P001', 'sandbox' => true]);
+
+$tracking = $gateway->track('75123456789012');
+echo $tracking->status->value, ' - ', $tracking->latest()?->description, "\n";   // delivered - 快件已签收
+```
+
+A real call needs a ZTO Express account (the credentials below). **Unverified**: the request and
+answer shapes come from ZTO Express's published documentation, and the package has not been run
+against its service.
+
+## Configuration
+
 ```php
 $gateway = (new ZtoExpressGatewayFactory($http))->create($options);   // $http: the application's HTTP client - none given, the factory makes its own; the options below
 ```
